@@ -18,6 +18,7 @@ import com.ivyclub.contact.databinding.FragmentFriendBinding
 import com.ivyclub.contact.util.BaseFragment
 import com.ivyclub.contact.util.changeVisibilityWithDirection
 import com.ivyclub.contact.util.hideKeyboard
+import com.ivyclub.contact.util.showKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +40,6 @@ class FriendFragment : BaseFragment<FragmentFriendBinding>(R.layout.fragment_fri
     private lateinit var dialog: Dialog
     private var _dialogBinding: DialogFriendBinding? = null
     private val dialogBinding get() = _dialogBinding ?: error("dialogBinding이 초기화되지 않았습니다.")
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,10 +140,12 @@ class FriendFragment : BaseFragment<FragmentFriendBinding>(R.layout.fragment_fri
         viewModel.isSearchViewVisible.observe(viewLifecycleOwner) { newVisibilityState ->
             with(binding) {
                 if (newVisibilityState) {
+                    showKeyboard()
                     etSearch.changeVisibilityWithDirection(
                         Gravity.TOP,
                         View.VISIBLE,
-                        ANIMATION_TIME
+                        ANIMATION_TIME,
+                        this@FriendFragment::requestFocus
                     )
                 } else {
                     hideKeyboard()
@@ -156,6 +158,10 @@ class FriendFragment : BaseFragment<FragmentFriendBinding>(R.layout.fragment_fri
                 }
             }
         }
+    }
+
+    private fun requestFocus() {
+        binding.etSearch.requestFocus()
     }
 
     private fun observeFriendList() {
